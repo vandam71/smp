@@ -1,2 +1,2 @@
 pip freeze | xargs pip uninstall -y
-pip install --upgrade -r reqs.txt
+pip install --upgrade -r install/reqs.txt
