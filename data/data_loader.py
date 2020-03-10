@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 
 
-class DataLoader():
+class DataLoader:
 
     def __init__(self, filename, split, cols):
         dataframe = pd.read_csv(filename)
