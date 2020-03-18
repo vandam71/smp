@@ -1,9 +1,8 @@
-import numpy as np
+from pandas_datareader import data
 import matplotlib.pyplot as plt
-from sklearn.preprocessing import scale
-from keras import models
-import pandas_datareader as pdr
+from data.stocks import save_sp500_tickers, get_data, compile_data
 
-pdr.get_data_yahoo("AMZN")
+# save_sp500_tickers()
+# get_data(reload_sp500=True, start=None, reload_data=True)
+compile_data()
 
-model = models.Sequential()
