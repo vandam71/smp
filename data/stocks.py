@@ -55,7 +55,7 @@ def get_data(reload_sp500=False, reload_data=False, start=None):
                     df = pdr.DataReader(name=ticker, data_source='yahoo', start=start, end=datetime.today())
                     df.to_csv(f'{tickers_path}/{ticker}.csv')
                     print(f'Detected {ticker}. Saving as {ticker}.csv')
-                except:
+                except FileNotFoundError:
                     print(f"Couldn't read {ticker}")
             else:
                 print("Already have ticker saved")
@@ -64,7 +64,7 @@ def get_data(reload_sp500=False, reload_data=False, start=None):
                 df = pdr.DataReader(name=ticker, data_source='yahoo', start=start, end=datetime.today())
                 df.to_csv(f'{tickers_path}/{ticker}.csv')
                 print(f'Detected {ticker}. Saving as {ticker}.csv')
-            except:
+            except FileNotFoundError:
                 print(f"Couldn't read {ticker}")
 
 
@@ -78,7 +78,7 @@ def get_ticker(ticker, start=None):
         df = pdr.DataReader(name=ticker, data_source='yahoo', start=start, end=datetime.today())
         df.to_csv(f'{tickers_path}/{ticker}.csv')
         print(f'Detected {ticker}. Saving as {ticker}.csv')
-    except:
+    except FileNotFoundError:
         print(f"Couldn't read {ticker}")
 
 
@@ -95,14 +95,14 @@ def compile_data():
         try:
             df = pd.read_csv(f'{tickers_path}/{ticker}.csv')
             df.set_index('Date', inplace=True)
-            df.rename(columns={'Adj Close':ticker}, inplace=True)
+            df.rename(columns={'Adj Close': ticker}, inplace=True)
             df.drop(['Open', 'High', 'Low', 'Close', 'Volume'], 1, inplace=True)
             if main_df.empty:
                 main_df = df
             else:
                 main_df = main_df.join(df, how='outer')
             print(f"Compiling {c}/{len(tickers)}")
-        except:
+        except FileNotFoundError:
             print("Ticker file not found")
         c += 1
     main_df.to_csv(f'{files_path}/sp500_closes.csv')
