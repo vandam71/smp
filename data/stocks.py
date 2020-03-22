@@ -57,6 +57,8 @@ def get_data(reload_sp500=False, reload_data=False, start=None):
                     print(f'Detected {ticker}. Saving as {ticker}.csv')
                 except FileNotFoundError:
                     print(f"Couldn't read {ticker}")
+                except KeyError:
+                    pass
             else:
                 print("Already have ticker saved")
         else:
@@ -66,6 +68,8 @@ def get_data(reload_sp500=False, reload_data=False, start=None):
                 print(f'Detected {ticker}. Saving as {ticker}.csv')
             except FileNotFoundError:
                 print(f"Couldn't read {ticker}")
+            except KeyError:
+                pass
 
 
 def get_ticker(ticker, start=None):

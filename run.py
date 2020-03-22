@@ -1,12 +1,25 @@
-from data.stocks import save_sp500_tickers, get_data, compile_data
-from data.data_loader import DataLoader
+from data.stocks import get_data, compile_data
+from data.ticker import Ticker
+import Constants
+import pandas as pd
+import matplotlib.pyplot as plt
 
-files_path = "files"
-tickers_path = files_path + "/tickers"
+
+def reload_data():
+    get_data(reload_data=True, reload_sp500=True)
+    compile_data()
 
 
 def main():
-    exit()
+    ticker = 'AMZN'
+    df = pd.read_csv(f"{Constants.TICKER_PATH}/{ticker}.csv", parse_dates=True, index_col='Date')
+    df = df[-50:]
+    ticker = Ticker(df, ticker)
+    full = pd.DataFrame({'Growth': ticker.stock_growth()['Growth'],
+                         'Increase': ticker.stock_increase()['Increase'],
+                         'Change': ticker.stock_change()['Change']})
+    full.plot(grid=True).axhline(y=0, color='black', lw=2)
+    plt.show()
 
 
 if __name__ == "__main__":
