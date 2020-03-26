@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+from plot.graphs import pandas_candlestick
 
 
 class Ticker:
@@ -40,3 +41,6 @@ class Ticker:
         temp = self.adj_close.copy()
         temp.rename(columns={'Adj Close': 'Change'}, inplace=True)
         return temp.apply(lambda x: np.log(x) - np.log(x.shift(1)))
+
+    def draw_candlestick(self):
+        pandas_candlestick(self.data, self.ticker, window=2)

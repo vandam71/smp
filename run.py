@@ -19,6 +19,7 @@ def main():
                          'Increase': ticker.stock_increase()['Increase'],
                          'Change': ticker.stock_change()['Change']})
     full.plot(grid=True).axhline(y=0, color='black', lw=2)
+    ticker.draw_candlestick()
     plt.show()
 
 

@@ -12,7 +12,7 @@ def pandas_candlestick(data, ticker, days=0, window=10):
     df = data[-days:].copy()
     df = df['Adj Close'].resample(f'{window}D').ohlc()
     df.reset_index(inplace=True)
-    diff = get_business_days(df['Date'][-1:].values.astype('datetime64[D]'), dt.datetime(2020, 1, 1, 0, 0).date())
+    diff = get_business_days(df['Date'][-1:].values.astype('datetime64[D]'), dt.datetime(2020, 1, 1).date())
     df['Date'] = df['Date'].map(date2num)
     fig, ax = plt.subplots()
     fig.subplots_adjust(bottom=0.2)
