@@ -6,6 +6,10 @@ import datetime as dt
 import numpy as np
 
 
+def pandas_plot(data, ticker):
+    """TODO"""
+
+
 def pandas_candlestick(data, ticker, days=0, window=10):
     if days == 0:
         days = data.shape[0]
@@ -34,4 +38,4 @@ def get_business_days(start, end):
     nyse = cal.get_calendar('NYSE')
     holidays = nyse.holidays()
     holidays = list(holidays.holidays)
-    return np.busday_count(end, start, holidays=holidays)[0]
+    return np.busday_count(end, start, holidays=holidays)
