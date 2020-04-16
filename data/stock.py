@@ -2,37 +2,40 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from data.reader import read_from_csv, get_ticker
 from plot.graphs import pandas_candlestick
-from analysis.text import exploratory
-from analysis.calculate import returns_histogram, returns_plot
+import pickle
+import numpy as np
 
 
 class Stock:
-    DATA: pd.DataFrame()
-    TICKER: str
+    def __init__(self, ticker, data=None):
+        self.ticker = ticker
+        self.data = pd.DataFrame(data)
 
-    def __init__(self, ticker, data=None, force=False):
-        if ticker is None:
-            return
-        self.TICKER = ticker
-        if data is None:
-            if force is False:
-                self.DATA = read_from_csv(self.TICKER)
-            else:
-                self.DATA = get_ticker(ticker=self.TICKER)
+    @classmethod
+    def fromCSV(cls, ticker):
+        data = read_from_csv(ticker)
+        return cls(ticker=ticker, data=data)
+
+    @classmethod
+    def fromRemote(cls, ticker, start=None):
+        data = get_ticker(ticker=ticker, start=start)
+        return cls(ticker=ticker, data=data)
+
+    @staticmethod
+    def fromPickle(ticker):
+        return pickle.load(open(ticker + ".smp", "rb"))
 
     def plot(self, fields='all'):
         if fields == 'all':
-            plots = self.DATA[['Open', 'High', 'Low', 'Close']]
+            plots = self.data[['Open', 'High', 'Low', 'Close']]
         else:
-            plots = self.DATA[fields]
+            plots = self.data[fields]
         plots.plot(grid=True)
-        plt.show()
-
-    def stock_returns(self):
-        temp = pd.DataFrame({'Adj Close': self.DATA['Adj Close']})
-        returns_histogram(temp)
-        returns_plot(temp)
+        plt.title(self.ticker)
         plt.show()
 
     def draw_candlestick(self, window=2):
-        pandas_candlestick(self.DATA, self.TICKER, window=window)
+        pandas_candlestick(self.data, self.ticker, window=window)
+
+    def dump(self):
+        pickle.dump(self, open(self.ticker + ".smp", "wb"))

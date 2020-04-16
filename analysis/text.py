@@ -16,4 +16,3 @@ def exploratory(data, ticker):
     print('-' * 60)
     print("Data Statistics Summary:")
     print(data.describe())
-
