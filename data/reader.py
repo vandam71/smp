@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 import pandas_datareader as pdr
 import pandas as pd
-from Constants import *
+import Constants
 
 
 def save_sp500_tickers():
@@ -14,8 +14,8 @@ def save_sp500_tickers():
     soup = bs4.BeautifulSoup(resp.text, features='lxml')
     table = soup.find('tbody')
     tickers = []
-    if not os.path.exists(FILE_PATH):
-        os.makedirs(FILE_PATH)
+    if not os.path.exists(Constants.FILE_PATH):
+        os.makedirs(Constants.FILE_PATH)
     # tickers table
     for row in table.findAll('tr')[1:]:
         # first column of the table for each line that has the ticker name
@@ -26,7 +26,7 @@ def save_sp500_tickers():
     # Extra add Tesla or other tickers to the list
     tickers.append('TSLA')
     # save to a file
-    with open(f"{FILE_PATH}/sp500tickers.pickle", "wb") as f:
+    with open(f"{Constants.FILE_PATH}/sp500tickers.pickle", "wb") as f:
         pickle.dump(tickers, f)
     print(tickers)
     return tickers
@@ -37,13 +37,13 @@ def get_data(reload_sp500=False, reload_data=False, start=None):
         tickers = save_sp500_tickers()
     else:
         try:
-            with open(f"{FILE_PATH}/sp500tickers.pickle", "rb") as f:
+            with open(f"{Constants.FILE_PATH}/sp500tickers.pickle", "rb") as f:
                 tickers = pickle.load(f)
         except FileNotFoundError:
             print("File Not Found")
             return
-    if not os.path.exists(TICKER_PATH):
-        os.makedirs(TICKER_PATH)
+    if not os.path.exists(Constants.TICKER_PATH):
+        os.makedirs(Constants.TICKER_PATH)
     # if start is specified, else take a default value
     start = datetime(2010, 1, 1) if start is None else start
     for ticker in tickers[:]:
@@ -52,7 +52,7 @@ def get_data(reload_sp500=False, reload_data=False, start=None):
                 while True:
                     try:
                         df = pdr.DataReader(name=ticker, data_source='yahoo', start=start, end=datetime.today())
-                        df.to_csv(f'{TICKER_PATH}/{ticker}.csv')
+                        df.to_csv(f'{Constants.TICKER_PATH}/{ticker}.csv')
                         print(f'Detected {ticker}. Saving as {ticker}.csv')
                     except FileNotFoundError or KeyError:
                         print(f"Couldn't read {ticker}")
@@ -64,7 +64,7 @@ def get_data(reload_sp500=False, reload_data=False, start=None):
         else:
             try:
                 df = pdr.DataReader(name=ticker, data_source='yahoo', start=start, end=datetime.today())
-                df.to_csv(f'{TICKER_PATH}/{ticker}.csv')
+                df.to_csv(f'{Constants.TICKER_PATH}/{ticker}.csv')
                 print(f'Detected {ticker}. Saving as {ticker}.csv')
             except FileNotFoundError:
                 print(f"Couldn't read {ticker}")
@@ -75,12 +75,12 @@ def get_data(reload_sp500=False, reload_data=False, start=None):
 def get_ticker(ticker, start=None):
     if ticker is None:
         return
-    if not os.path.exists(TICKER_PATH):
-        os.makedirs(TICKER_PATH)
+    if not os.path.exists(Constants.TICKER_PATH):
+        os.makedirs(Constants.TICKER_PATH)
     start = datetime(2020, 1, 1) if start is None else start
     try:
         df = pdr.DataReader(name=ticker, data_source='yahoo', start=start, end=datetime.today())
-        df.to_csv(f'{TICKER_PATH}/{ticker}.csv')
+        df.to_csv(f'{Constants.TICKER_PATH}/{ticker}.csv')
         print(f'Detected {ticker}. Saving as {ticker}.csv')
         return df
     except FileNotFoundError:
@@ -89,7 +89,7 @@ def get_ticker(ticker, start=None):
 
 def compile_data():
     try:
-        with open(f"{FILE_PATH}/sp500tickers.pickle", "rb") as f:
+        with open(f"{Constants.FILE_PATH}/sp500tickers.pickle", "rb") as f:
             tickers = pickle.load(f)
     except FileNotFoundError:
         print("File Not Found")
@@ -98,7 +98,7 @@ def compile_data():
     c = 0
     for count, ticker in enumerate(tickers):
         try:
-            df = pd.read_csv(f'{TICKER_PATH}/{ticker}.csv')
+            df = pd.read_csv(f'{Constants.TICKER_PATH}/{ticker}.csv')
             df.set_index('Date', inplace=True)
             df.rename(columns={'Adj Close': ticker}, inplace=True)
             df.drop(['Open', 'High', 'Low', 'Close', 'Volume'], 1, inplace=True)
@@ -110,12 +110,12 @@ def compile_data():
         except FileNotFoundError:
             print("Ticker file not found")
         c += 1
-    main_df.to_csv(f'{FILE_PATH}/sp500_closes.csv')
+    main_df.to_csv(f'{Constants.FILE_PATH}/sp500_closes.csv')
 
 
 def read_from_csv(ticker, date=True):
     if date:
-        df = pd.read_csv(f"{TICKER_PATH}/{ticker}.csv", parse_dates=True, index_col='Date')
+        df = pd.read_csv(f"{Constants.TICKER_PATH}/{ticker}.csv", parse_dates=True, index_col='Date')
     else:
-        df = pd.read_csv(f"{TICKER_PATH}/{ticker}.csv")
+        df = pd.read_csv(f"{Constants.TICKER_PATH}/{ticker}.csv")
     return df
