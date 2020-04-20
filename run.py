@@ -10,11 +10,8 @@ def reload_data():
 
 
 def main():
-    ticker = Stock.fromCSV('AMZN')
-    ticker.plot()
-    ticker.dump()
-    ticker2 = Stock.fromPickle('AMZN')
-    ticker2.plot()
+    ticker1 = Stock.from_csv('AMZN')
+    print(ticker1)
 
 
 if __name__ == "__main__":
