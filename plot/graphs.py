@@ -31,7 +31,6 @@ def pandas_candlestick(data, ticker, days=0, window=10):
     plt.title(f'{ticker} Candle Stick')
     plt.xlabel('Dates')
     plt.ylabel('Share Value ($)')
-    plt.show()
 
 
 def get_business_days(start, end):

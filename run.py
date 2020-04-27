@@ -10,7 +10,7 @@ def reload_data():
 
 
 def main():
-    ticker1 = Stock.from_csv('AMZN')
+    ticker1 = Stock.from_remote(None, datetime(2019, 1, 1).date())
     print(ticker1)
 
 

@@ -1,21 +1,26 @@
+import uuid
 import pandas as pd
 import matplotlib.pyplot as plt
 from data.reader import read_from_csv, get_ticker
 from plot.graphs import pandas_candlestick
+from data.statistics import Statistics
 import pickle
 import numpy as np
 from scipy.stats import norm
 
 
-class Stock:
-    def __init__(self, ticker, data=None):
+class Stock(object):
+    def __init__(self, ticker: str, data: pd.DataFrame):
         self.ticker = ticker
         self.data = pd.DataFrame(data)
-        self.close = self.data['Adj Close'].to_numpy()
         self.time_window = [self.data.index[0], self.data.index[-1]]
+        self.statistics = Statistics(self.data)
+
+    def __repr__(self):
+        return str(self)
 
     def __str__(self):
-        return str(self.__class__) + ": " + str(self.ticker)
+        return f'{str(self.__class__)}: {str(self.ticker)}, id: {id(self)}'
 
     @classmethod
     def from_csv(cls, ticker):
@@ -23,7 +28,7 @@ class Stock:
         return cls(ticker=ticker, data=data)
 
     @classmethod
-    def from_remote(cls, ticker, start=None):
+    def from_remote(cls, ticker: str, start=None):
         data = get_ticker(ticker=ticker, start=start)
         return cls(ticker=ticker, data=data)
 
@@ -38,7 +43,6 @@ class Stock:
             plots = self.data[fields]
         plots.plot(grid=True)
         plt.title(self.ticker)
-        plt.show()
 
     def log_returns(self):
         return np.diff(np.log(self.close.copy()))
