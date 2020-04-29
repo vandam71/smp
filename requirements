@@ -1,0 +1,10 @@
+matplotlib
+pandas
+numpy
+scipy
+mplfinance
+pandas_market_calendars
+requests
+bs4
+pandas_datareader
+progressbar2

@@ -1,17 +1,25 @@
-from data.reader import get_data, compile_data
+from data.reader import Reader
 from data.stock import Stock
 from datetime import datetime
+import matplotlib.pyplot as plt
+from constants import *
+
+plt.rcParams['figure.figsize'] = (10, 5)
+# TODO docstrings
 
 
 def reload_data():
-    start = datetime(2020, 1, 1).date()
-    get_data(reload_data=True, reload_sp500=True, start=start)
-    compile_data()
+    reader = Reader()
+    reader.fetch_data(reload_data=False, reload_tickers=False, start=datetime(2020, 1, 1)).dump_to_csv()
+    reader.compile_data()
 
 
 def main():
-    ticker1 = Stock.from_remote(None, datetime(2019, 1, 1).date())
-    print(ticker1)
+    ticker1 = Stock.from_csv("AMZN")
+    ticker1.draw_candlestick(days=50)
+    ticker1.draw_plot(days=50)
+    print(Stock.__doc__)
+    plt.show()
 
 
 if __name__ == "__main__":
