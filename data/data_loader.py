@@ -54,7 +54,8 @@ class DataLoader:
         y = window[-1, [0]]
         return x, y
 
-    def normalise_windows(self, window_data, single_window=False):
+    @staticmethod
+    def normalise_windows(window_data, single_window=False):
         normalised_data = []
         window_data = [window_data] if single_window else window_data
         for window in window_data:
