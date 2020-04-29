@@ -4,13 +4,10 @@ import pandas_market_calendars as cal
 import matplotlib.pyplot as plt
 import datetime as dt
 import numpy as np
+import pandas as pd
 
 
-def pandas_plot(data, ticker):
-    """TODO"""
-
-
-def pandas_candlestick(data, ticker, days=0, window=10):
+def pandas_candlestick(data: pd.DataFrame, ticker: str, days: int = 0, window: int = 10):
     if days == 0:
         days = data.shape[0]
     df = data[-days:].copy()
@@ -31,6 +28,7 @@ def pandas_candlestick(data, ticker, days=0, window=10):
     plt.title(f'{ticker} Candle Stick')
     plt.xlabel('Dates')
     plt.ylabel('Share Value ($)')
+    plt.show(block=False)
 
 
 def get_business_days(start, end):
