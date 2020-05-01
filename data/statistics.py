@@ -12,7 +12,7 @@ class Statistics(object):
         Initializes the Statistic class
         :param data: numpy array
         """
-        self.close = data.to_numpy
+        self.close = data
         self.returns = None
         self.mean = None
         self.sigma = None
