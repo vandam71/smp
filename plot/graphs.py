@@ -1,13 +1,31 @@
 from mplfinance.original_flavor import candlestick_ohlc
 from matplotlib.dates import date2num, DateFormatter
-import pandas_market_calendars as cal
 import matplotlib.pyplot as plt
 import datetime as dt
-import numpy as np
 import pandas as pd
+from utilities.dates import get_business_days
+
+
+def pandas_dataframe(data: pd.DataFrame, ticker: str, days: int = 0):
+    if days == 0:
+        days = data.shape[0]
+    data = data[-days:]
+    data.plot(grid=True)
+    plt.title(ticker)
+    plt.xlabel('Dates')
+    plt.ylabel('Share Value ($)')
+    plt.show(block=False)
 
 
 def pandas_candlestick(data: pd.DataFrame, ticker: str, days: int = 0, window: int = 10):
+    """
+    Plots a candlestick graph for the data coming. Plots _days_ in the past with a _window_ for values
+    :param data: pd.DataFrame
+    :param ticker: str
+    :param days: int
+    :param window: INT
+    :return: None
+    """
     if days == 0:
         days = data.shape[0]
     df = data[-days:].copy()
@@ -29,10 +47,3 @@ def pandas_candlestick(data: pd.DataFrame, ticker: str, days: int = 0, window: i
     plt.xlabel('Dates')
     plt.ylabel('Share Value ($)')
     plt.show(block=False)
-
-
-def get_business_days(start, end):
-    nyse = cal.get_calendar('NYSE')
-    holidays = nyse.holidays()
-    holidays = list(holidays.holidays)
-    return np.busday_count(end, start, holidays=holidays)

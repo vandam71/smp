@@ -1,15 +1,10 @@
 import pandas as pd
 from datetime import datetime
-import matplotlib.pyplot as plt
 from .reader import Reader
-from plot.graphs import pandas_candlestick
-from data.statistics import Statistics
+from plot.graphs import pandas_candlestick, pandas_dataframe
+from .statistics import Statistics
 import pickle
-import numpy as np
-from scipy.stats import norm
 
-
-# TODO migrate every calculation to the Statistics class
 
 class Stock(object):
     """Stock class, contains all the information regarding a specific ticker"""
@@ -22,7 +17,7 @@ class Stock(object):
         self.ticker = ticker
         self.data = pd.DataFrame(data)
         self.time_window = [self.data.index[0], self.data.index[-1]]
-        self.statistics = Statistics(self.data)
+        self.statistics = Statistics(self.data['Adj Close'].to_numpy()).initialize()
 
     def __repr__(self):
         """
@@ -70,47 +65,6 @@ class Stock(object):
         """
         return pickle.load(open(ticker + ".smp", "rb"))
 
-    def log_returns(self):
-        return np.diff(np.log(self.close.copy()))
-
-    def daily_drops(self, drops: [] = None):
-        if drops is None:
-            drops = [-0.01, -0.05, -0.10, -0.15, -0.20, -0.25, -0.30, -0.35, -0.40, -0.45, -0.50]
-        returns = self.log_returns()
-        mean = returns.mean()
-        sigma = returns.std(ddof=1)
-        prob = []
-        for i in range(len(drops)):
-            prob.append(norm.cdf(drops[i], mean, sigma))
-        return prob
-
-    def yearly_drops(self, drops: [] = None):     # TODO Change to actual days and not a 225 value
-        if drops is None:
-            drops = [-0.01, -0.05, -0.10, -0.15, -0.20, -0.25, -0.30, -0.35, -0.40, -0.45, -0.50]
-        returns = self.log_returns()
-        mean225 = 225 * returns.mean()
-        sigma225 = (225 ** 0.5) * returns.std(ddof=1)
-        prob = []
-        for i in range(len(drops)):
-            prob.append(norm.cdf(drops[i], mean225, sigma225))
-        return prob
-
-    def quantile(self):
-        returns = self.log_returns()
-        mean = returns.mean()
-        sigma = returns.std(ddof=1)
-        quantile = [0.05, 0.25, 0.75, 0.95]
-        for i in range(len(quantile)):
-            quantile[i] = norm.ppf(quantile[i], mean, sigma)
-        return quantile
-
-    def z_scores(self):
-        """Standardized test statistic for Z-Scores"""
-        returns = self.log_returns()
-        mean = returns.mean()       # mean = 0 under the null hypothesis
-        sigma = returns.std(ddof=1)
-        return (mean - 0)/(sigma/len(returns) ** 0.5)
-
     def draw_candlestick(self, window: int = 2, days: int = 0):
         """
         Draw the Candlestick graph for the Stock object
@@ -127,17 +81,13 @@ class Stock(object):
         :param days: int
         :return: None
         """
-        if days == 0:
-            days = self.data.shape[0]
         if fields == 'all':
-            plots = self.data[['Open', 'High', 'Low', 'Close']][:days]
+            pandas_dataframe(self.data[['Open', 'High', 'Low', 'Close']], self.ticker, days=days)
         else:
-            plots = self.data[fields]
-        plots.plot(grid=True)
-        plt.title(self.ticker)
-        plt.xlabel('Dates')
-        plt.ylabel('Share Value ($)')
-        plt.show(block=False)
+            for field in fields:
+                if field not in self.data.columns:
+                    raise Exception('Field not found in dataframe')
+            pandas_dataframe(self.data[fields], self.ticker, days=days)
 
     def dump(self):
         """

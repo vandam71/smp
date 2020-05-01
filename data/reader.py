@@ -4,7 +4,6 @@ Stock market collector class
 from requests import get
 from bs4 import BeautifulSoup
 import pandas_datareader as pdr
-import time
 import pandas as pd
 from datetime import datetime
 from constants import *
@@ -127,7 +126,7 @@ class Reader(object):
         del bar
 
     @staticmethod
-    def fetch_single_data(ticker: str, start: datetime = datetime(2010, 1, 1), save: bool = False):
+    def fetch_single_data(ticker: str, start: datetime = datetime(2020, 1, 1), save: bool = False):
         """
         Downloads data for a single given ticker
         :param ticker: str
