@@ -104,6 +104,10 @@ class Reader(object):
                 return stock
 
     def compile_data(self):
+        """
+        Compiles every Adj Close column into a file for every ticker in the reader already
+        :return: None
+        """
         main_df = pd.DataFrame()
         print('[READER] Compiling {} tickers'.format(len(self.stocks)))
         bar = ProgressBar(start=0, maxval=len(self.stocks))
