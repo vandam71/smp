@@ -5,6 +5,7 @@ PYTHON = ./env/bin/python3
 
 install:
 	$(PYTHON) -m pip install --upgrade -r requirements
+	$(PYTHON) setup.py install
 
 run:
 	$(PYTHON) run.py
@@ -13,8 +14,7 @@ environment:
 	$(GLOBAL_PYTHON) -m venv env
 
 clean:
-	$(PYTHON) -m pip freeze | xargs $(PYTHON) -m pip uninstall -y
-	rm -f *.pyc
+	$(PYTHON) setup.py clean
 
 all:
-	make clean environment install run
+	make clean install run

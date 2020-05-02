@@ -8,7 +8,7 @@ authors = [{
     'name': 'Rafael Samorinha',
     'email': 'rafaelsamorinha@gmail.com'
 }]
-modules = ['data', 'plot']
+modules = ['data', 'plot', 'utilities']
 github_username = 'vandam71'
 github_repository = 'smp'
 guthub_url = "{baseurl}/{username}/{repository}".format(

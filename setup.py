@@ -1,19 +1,25 @@
 from abc import ABC
 
 import package
-from setuptools import setup, find_namespace_packages
 import distutils.cmd
 import os
 import shutil
 
 ROOTDIR = os.path.dirname(os.path.abspath(__file__))
 FILES_CLEAN = ['build', 'dist', '{name}.egg-info'.format(name=package.name), '.cache']
-WALK_FILES_EXT_CLEAN = ['.pyc']
+WALK_FILES_EXT_CLEAN = ['.pyc', '.smp']
 WALK_DIRS_CLEAN = ['__pycache__']
 
 
-class CleanCommand(distutils.cmd.Command, ABC):
+class CleanCommand(distutils.cmd.Command):
     description = 'Project Clean'
+    user_options = []
+
+    def initialize_options(self) -> None:
+        pass
+
+    def finalize_options(self) -> None:
+        pass
 
     def run(self) -> None:
         for filename in FILES_CLEAN:
@@ -32,9 +38,14 @@ class CleanCommand(distutils.cmd.Command, ABC):
 
 
 def main():
-    args_setuptools = dict(
-        keywords=', '.join([keyword for keyword in package.keywords])
-    )
+    try: 
+        from setuptools import setup
+        args_setuptools = dict(
+            keywords =', '.join([keyword for keyword in package.keywords])
+        )
+    except ImportError:
+        from distutils.core import setup
+        args_setuptools = dict()
 
     metadata = dict(
         name=package.name,
@@ -43,7 +54,7 @@ def main():
         long_description=package.long_description,
         author=','.join([author['name'] for author in package.authors]),
         author_email=','.join([author['email'] for author in package.authors]),
-        packages=find_namespace_packages(),
+        packages=package.modules,
         cmdclass={
             'clean': CleanCommand
                  },
