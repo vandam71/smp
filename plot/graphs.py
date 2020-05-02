@@ -7,6 +7,13 @@ from utilities.dates import get_business_days
 
 
 def pandas_dataframe(data: pd.DataFrame, ticker: str, days: int = 0):
+    """
+    Plots a pandas dataframe for a ticker, in the time window of _days_
+    :param data:
+    :param ticker:
+    :param days:
+    :return:
+    """
     if days == 0:
         days = data.shape[0]
     data = data[-days:]
@@ -23,7 +30,7 @@ def pandas_candlestick(data: pd.DataFrame, ticker: str, days: int = 0, window: i
     :param data: pd.DataFrame
     :param ticker: str
     :param days: int
-    :param window: INT
+    :param window: int
     :return: None
     """
     if days == 0:

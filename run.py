@@ -4,7 +4,6 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 
 plt.rcParams['figure.figsize'] = (10, 5)
-# TODO docstrings
 
 
 def reload_data():
@@ -14,7 +13,7 @@ def reload_data():
 
 
 def main():
-    ticker1 = Stock.from_pickle("AMZN")
+    ticker1 = Stock.from_remote("AMZN")
     # CODE GOES HERE
 
     # ---------------
@@ -23,4 +22,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    reload_data()
