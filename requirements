@@ -3,8 +3,10 @@ pandas
 numpy
 scipy
 mplfinance
-pandas_market_calendars
+pandas-market-calendars
 requests
-bs4
+beautifulsoup4
 pandas_datareader
 progressbar2
+setuptools
+
