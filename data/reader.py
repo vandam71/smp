@@ -6,6 +6,7 @@ from datetime import datetime
 from constants import *
 import pickle
 from progressbar import ProgressBar
+import sys
 
 
 class Reader(object):
@@ -49,7 +50,7 @@ class Reader(object):
             except FileNotFoundError:       # if there is no file download the data
                 self.fetch_tickers()
         print('[READER] Downloading {} tickers'.format(len(self._tickers)))
-        bar = ProgressBar(start=0, maxval=len(self._tickers))
+        bar = ProgressBar(start=0, maxval=len(self._tickers), fd=sys.stdout)
         i = 0
         for ticker in self._tickers[:]:      # iterates over the tickers list and downloads data for each
             if not reload_data:
@@ -81,7 +82,7 @@ class Reader(object):
         :return: None
         """
         print('[READER] Dumping {} tickers to CSV'.format(len(self._stocks)))
-        bar = ProgressBar(start=0, maxval=len(self._stocks))
+        bar = ProgressBar(start=0, maxval=len(self._stocks), fd=sys.stdout)
         i = 0
         for ticker, stock in self._stocks:
             stock.to_csv(f'{TICKER_PATH}/{ticker}.csv')
@@ -107,7 +108,7 @@ class Reader(object):
         """
         main_df = pd.DataFrame()
         print('[READER] Compiling {} tickers'.format(len(self._stocks)))
-        bar = ProgressBar(start=0, maxval=len(self._stocks))
+        bar = ProgressBar(start=0, maxval=len(self._stocks), fd=sys.stdout)
         i = 0
         for ticker, stock in self._stocks:
             df = stock.copy()
