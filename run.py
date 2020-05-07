@@ -2,6 +2,7 @@ from data.reader import Reader
 from data.stock import Stock
 from datetime import datetime
 import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
 
 plt.rcParams['figure.figsize'] = (10, 5)
 
@@ -15,8 +16,8 @@ def reload_data():
 def main():
     ticker1 = Stock.from_remote("AMZN")
     # CODE GOES HERE
-
-    # ---------------
+    
+    # --------------
     plt.show()
     ticker1.dump()
 
