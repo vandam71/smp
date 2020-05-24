@@ -1,6 +1,6 @@
 from mplfinance.original_flavor import candlestick_ohlc
 from matplotlib.dates import date2num, DateFormatter
-import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
 import datetime as dt
 import pandas as pd
 from utilities.dates import get_business_days
@@ -9,19 +9,21 @@ from utilities.dates import get_business_days
 def pandas_dataframe(data: pd.DataFrame, ticker: str, days: int = 0):
     """
     Plots a pandas dataframe for a ticker, in the time window of _days_
-    :param data:
-    :param ticker:
-    :param days:
-    :return:
+    :param data: pd.Dataframe
+    :param ticker: str
+    :param days: int
+    :return: Figure
     """
+    names = list(data.columns)
     if days == 0:
         days = data.shape[0]
     data = data[-days:]
-    data.plot(grid=True)
-    plt.title(ticker)
-    plt.xlabel('Dates')
-    plt.ylabel('Share Value ($)')
-    plt.show(block=False)
+    fig = Figure()
+    a = fig.add_subplot(111, title=f'{ticker} Market Value', xlabel='Dates', ylabel='Share Value ($)')
+    l1, l2, l3, l4 = a.plot(data)
+    a.grid(True)
+    a.legend((l1, l2, l3, l4), names)
+    return fig
 
 
 def pandas_candlestick(data: pd.DataFrame, ticker: str, days: int = 0, window: int = 10):
@@ -31,7 +33,7 @@ def pandas_candlestick(data: pd.DataFrame, ticker: str, days: int = 0, window: i
     :param ticker: str
     :param days: int
     :param window: int
-    :return: None
+    :return: Figure
     """
     if days == 0:
         days = data.shape[0]
@@ -40,8 +42,8 @@ def pandas_candlestick(data: pd.DataFrame, ticker: str, days: int = 0, window: i
     df.reset_index(inplace=True)
     diff = get_business_days(df['Date'][-1:].values.astype('datetime64[D]'), dt.datetime(2020, 1, 1).date())
     df['Date'] = df['Date'].map(date2num)
-    fig, ax = plt.subplots()
-    fig.subplots_adjust(bottom=0.2)
+    fig = Figure()
+    ax = fig.add_subplot(111, title=f'{ticker} Candle Stick', xlabel='Dates', ylabel='Share Value ($)')
     ax.grid(True)
     ax.xaxis_date()
     ax.autoscale_view()
@@ -50,7 +52,4 @@ def pandas_candlestick(data: pd.DataFrame, ticker: str, days: int = 0, window: i
         ax.xaxis.set_major_formatter(DateFormatter('%b %d'))
     else:
         ax.xaxis.set_major_formatter(DateFormatter('%b %Y'))
-    plt.title(f'{ticker} Candle Stick')
-    plt.xlabel('Dates')
-    plt.ylabel('Share Value ($)')
-    plt.show(block=False)
+    return fig

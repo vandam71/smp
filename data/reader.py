@@ -125,16 +125,17 @@ class Reader(object):
         del bar
 
     @staticmethod
-    def fetch_single_data(ticker: str, start: datetime = datetime(2020, 1, 1), save: bool = False):
+    def fetch_single_data(ticker: str, start: datetime = datetime(2020, 1, 1), end: datetime = datetime.today(), save: bool = False):
         """
         Downloads data for a single given ticker
         :param ticker: str
         :param start: datetime
+        :param end: datetime
         :param save: bool
         :return: pd.Dataframe
         """
         try:
-            df = pdr.DataReader(name=ticker, data_source='yahoo', start=start, end=datetime.today())
+            df = pdr.DataReader(name=ticker, data_source='yahoo', start=start, end=end)
             if save:
                 df.to_csv(f'{TICKER_PATH}/{ticker}.csv')
             return df

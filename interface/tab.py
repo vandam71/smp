@@ -16,12 +16,12 @@ class Tab(Frame, ABC):
 
 class GraphWindow(Tab):
     def __init__(self, name):
-        super().__init__(name)
+        Tab.__init__(self, name)
 
     def change_content(self, content):
         canvas = FigureCanvasTkAgg(content, master=self)
         canvas.draw()
-        canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
+        canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=True)
         toolbar = NavigationToolbar2Tk(canvas, self)
         toolbar.update()
-        canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
+        canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=True)

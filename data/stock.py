@@ -1,8 +1,8 @@
 import pandas as pd
 from datetime import datetime
-from .reader import Reader
+from data.reader import Reader
 from plot.graphs import pandas_candlestick, pandas_dataframe
-from .statistics import Statistics
+from data.statistics import Statistics
 import pickle
 
 
@@ -70,9 +70,9 @@ class Stock(object):
         :param days: int
         :return: None
         """
-        pandas_candlestick(self._data, self._ticker, window=window, days=days)
+        return pandas_candlestick(self._data, self._ticker, window=window, days=days)
 
-    def draw_plot(self, fields: str = 'all', days: int = 0) -> None:
+    def draw_plot(self, fields: str = 'all', days: int = 0):
         """
         Plots the specific fields
         :param fields: str or [str]
@@ -80,12 +80,12 @@ class Stock(object):
         :return: None
         """
         if fields == 'all':
-            pandas_dataframe(self._data[['Open', 'High', 'Low', 'Close']], self._ticker, days=days)
+            return pandas_dataframe(self._data[['Open', 'High', 'Low', 'Close']], self._ticker, days=days)
         else:
             for field in fields:
                 if field not in self._data.columns:
                     raise Exception('Field not found in dataframe')
-            pandas_dataframe(self._data[fields], self._ticker, days=days)
+            return pandas_dataframe(self._data[fields], self._ticker, days=days)
 
     def dump(self) -> None:
         """
@@ -93,3 +93,6 @@ class Stock(object):
         :return: None
         """
         pickle.dump(self, open(self._ticker + ".smp", "wb"))
+
+    def get_ticker(self) -> str:
+        return str(self._ticker)
