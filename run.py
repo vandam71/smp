@@ -7,7 +7,7 @@ from interface.tab import GraphWindow
 
 def reload_data():
     reader = Reader()
-    reader.fetch_data(reload_data=True, reload_tickers=False, start=datetime(2015, 1, 1)).dump_to_csv()
+    reader.fetch_data(reload_data=True, reload_tickers=True, start=datetime(2020, 1, 1)).dump_to_csv()
     reader.compile_data()
 
 
@@ -25,4 +25,4 @@ def main():
 
 
 if __name__ == "__main__":
-    reload_data()
+    main()
