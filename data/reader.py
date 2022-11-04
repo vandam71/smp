@@ -1,21 +1,19 @@
-"""
-Stock market collector class
-"""
 from requests import get
 from bs4 import BeautifulSoup
 import pandas_datareader as pdr
-import time
 import pandas as pd
 from datetime import datetime
 from constants import *
 import pickle
 from progressbar import ProgressBar
+import sys
 
 
 class Reader(object):
+    """Stock market collector class"""
     def __init__(self):
-        self.tickers = []
-        self.stocks = []
+        self._tickers = []
+        self._stocks = []
 
     def fetch_tickers(self):
         """
@@ -29,11 +27,11 @@ class Reader(object):
         for row in table.findAll('tr')[1:]:
             ticker = str(row.findAll('td')[0].text)
             ticker = ticker.replace("\n", "")
-            self.tickers.append(ticker)
-        self.tickers.append('TSLA')
+            self._tickers.append(ticker)
+        self._tickers.append('TSLA')
         with open(f"{FILE_PATH}/ticker_list.pickle", "wb") as f:
-            pickle.dump(self.tickers, f)
-        return self.tickers
+            pickle.dump(self._tickers, f)
+        return self._tickers
 
     def fetch_data(self, reload_tickers: bool = False, reload_data: bool = False, start: datetime = datetime(2010, 1, 1)):
         """
@@ -45,31 +43,31 @@ class Reader(object):
         """
         if reload_tickers:                  # check if tickers need to be reloaded
             self.fetch_tickers()
-        elif not self.tickers:              # if list is empty check if there is a pickle file
+        elif not self._tickers:              # if list is empty check if there is a pickle file
             try:                            # tries to open pickle file
                 with open(f"{FILE_PATH}/ticker_list.pickle", "rb") as f:
-                    self.tickers = pickle.load(f)
+                    self._tickers = pickle.load(f)
             except FileNotFoundError:       # if there is no file download the data
                 self.fetch_tickers()
-        print('[READER] Downloading {} tickers'.format(len(self.tickers)))
-        bar = ProgressBar(start=0, maxval=len(self.tickers))
+        print('[READER] Downloading {} tickers'.format(len(self._tickers)))
+        bar = ProgressBar(start=0, maxval=len(self._tickers), fd=sys.stdout)
         i = 0
-        for ticker in self.tickers[:]:      # iterates over the tickers list and downloads data for each
+        for ticker in self._tickers[:]:      # iterates over the tickers list and downloads data for each
             if not reload_data:
                 if not os.path.exists(f'{TICKER_PATH}/{ticker}.csv'):   # if there is no file download it
                     try:
                         df = pdr.DataReader(name=ticker, data_source='yahoo', start=start, end=datetime.today())
-                        self.stocks.append((ticker, df))
+                        self._stocks.append((ticker, df))
                     except KeyError:
                         pass
                 else:                   # if the CSV file for the ticker exists simply load it
                     df = self.read_from_csv(ticker)
                     if df is not None:
-                        self.stocks.append((ticker, df))
+                        self._stocks.append((ticker, df))
             else:                       # download all the data
                 try:
                     df = pdr.DataReader(name=ticker, data_source='yahoo', start=start, end=datetime.today())
-                    self.stocks.append((ticker, df))
+                    self._stocks.append((ticker, df))
                 except KeyError:
                     pass
             i += 1
@@ -83,10 +81,10 @@ class Reader(object):
         Dumps all the stocks into separate CSV files
         :return: None
         """
-        print('[READER] Dumping {} tickers to CSV'.format(len(self.stocks)))
-        bar = ProgressBar(start=0, maxval=len(self.stocks))
+        print('[READER] Dumping {} tickers to CSV'.format(len(self._stocks)))
+        bar = ProgressBar(start=0, maxval=len(self._stocks), fd=sys.stdout)
         i = 0
-        for ticker, stock in self.stocks:
+        for ticker, stock in self._stocks:
             stock.to_csv(f'{TICKER_PATH}/{ticker}.csv')
             i += 1
             bar.update(i)
@@ -99,7 +97,7 @@ class Reader(object):
         :param search: str
         :return: pd.Dataframe
         """
-        for ticker, stock in self.stocks:
+        for ticker, stock in self._stocks:
             if ticker is search:
                 return stock
 
@@ -109,10 +107,10 @@ class Reader(object):
         :return: None
         """
         main_df = pd.DataFrame()
-        print('[READER] Compiling {} tickers'.format(len(self.stocks)))
-        bar = ProgressBar(start=0, maxval=len(self.stocks))
+        print('[READER] Compiling {} tickers'.format(len(self._stocks)))
+        bar = ProgressBar(start=0, maxval=len(self._stocks), fd=sys.stdout)
         i = 0
-        for ticker, stock in self.stocks:
+        for ticker, stock in self._stocks:
             df = stock.copy()
             df.rename(columns={'Adj Close': ticker}, inplace=True)
             df.drop(['Open', 'High', 'Low', 'Close', 'Volume'], 1, inplace=True)
@@ -127,16 +125,17 @@ class Reader(object):
         del bar
 
     @staticmethod
-    def fetch_single_data(ticker: str, start: datetime = datetime(2010, 1, 1), save: bool = False):
+    def fetch_single_data(ticker: str, start: datetime = datetime(2020, 1, 1), end: datetime = datetime.today(), save: bool = False):
         """
         Downloads data for a single given ticker
         :param ticker: str
         :param start: datetime
+        :param end: datetime
         :param save: bool
         :return: pd.Dataframe
         """
         try:
-            df = pdr.DataReader(name=ticker, data_source='yahoo', start=start, end=datetime.today())
+            df = pdr.DataReader(name=ticker, data_source='yahoo', start=start, end=end)
             if save:
                 df.to_csv(f'{TICKER_PATH}/{ticker}.csv')
             return df
